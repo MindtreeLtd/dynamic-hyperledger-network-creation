@@ -1,0 +1,52 @@
+#
+#
+#  Copyright 2018, Mindtree Ltd. - All Rights Reserved.
+#
+#  Licensed under the Apache License, Version 2.0 (the "License");
+#  you may not use this file except in compliance with the License.
+#  You may obtain a copy of the License at
+#        http://www.apache.org/licenses/LICENSE-2.0
+# Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS,
+#  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#  See the License for the specific language governing permissions and
+#  limitations under the License.
+#
+#
+version: '2'
+
+networks:
+  byfn:
+services:
+  caCA_ORG:
+    image: hyperledger/fabric-ca:x86_64-1.0.0
+    environment:
+      - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
+      - FABRIC_CA_SERVER_CA_NAME=ca-orgORG_NO
+      - FABRIC_CA_SERVER_TLS_ENABLED=true
+      - FABRIC_CA_SERVER_TLS_CERTFILE=/etc/hyperledger/fabric-ca-server-config/ca.orgORG_NO.DOMAIN_NAME.com-cert.pem
+      - FABRIC_CA_SERVER_TLS_KEYFILE=/etc/hyperledger/fabric-ca-server-config/CAORG_NO_PRIVATE_KEY
+    ports:
+      - "CA_PORT:7054"
+    command: sh -c 'fabric-ca-server start --ca.certfile /etc/hyperledger/fabric-ca-server-config/ca.orgORG_NO.DOMAIN_NAME.com-cert.pem --ca.keyfile /etc/hyperledger/fabric-ca-server-config/CAORG_NO_PRIVATE_KEY -b admin:adminpw -d'
+    volumes:
+      - ./channel/crypto-config/peerOrganizations/orgORG_NO.DOMAIN_NAME.com/ca/:/etc/hyperledger/fabric-ca-server-config
+    container_name: ca_peerOrgORG_NO
+    networks:
+      - byfn
+      
+  orderer.DOMAIN_NAME.com:
+    extends:
+      file:   base/docker-compose-base.yaml
+      service: orderer.DOMAIN_NAME.com
+    container_name: orderer.DOMAIN_NAME.com
+    networks:
+      - byfn
+
+  peerPEER_NO.orgORG_NO.DOMAIN_NAME.com:
+    container_name: peerPEER_NO.orgORG_NO.DOMAIN_NAME.com
+    extends:
+      file:  base/docker-compose-base.yaml
+      service: peerPEER_NO.orgORG_NO.DOMAIN_NAME.com
+    networks:
+      - byfn
