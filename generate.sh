@@ -372,7 +372,7 @@ function replacePrivateKey () {
         replacePrivateKey
         generateChannelArtifacts
  
-#   to start docker containers   
+#   to start docker containers uncomment this line  
 #    docker-compose -f docker-compose.yaml up -d
    
    
